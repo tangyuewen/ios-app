@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>个人中心页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --violet-900: #5B21B6;
+            --violet-800: #6D28D9;
+            --violet-700: #7C3AED;
+            --violet-600: #8B5CF6;
+            --violet-500: #9333EA;
+            --violet-400: #A855F7;
+            --violet-300: #C084FC;
+            --violet-200: #DDD6FE;
+            --violet-100: #E9D5FF;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-50);
+        }
+
+        /* 自定义滚动条 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--violet-300);
+            border-radius: 10px;
+        }
+
+        /* 底部安全区 */
+        .bottom-safe-area {
+            padding-bottom: 20px;
+        }
+
+        /* 用户头像样式 */
+        .avatar-ring {
+            background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+            padding: 3px;
+            border-radius: 50%;
+        }
+
+        /* 功能卡片样式 */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:active {
+            transform: scale(0.95);
+        }
+
+        /* 成就徽章动画 */
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .badge-bounce {
+            animation: bounce 2s infinite;
+        }
+
+        /* 统计数字动画 */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .count-up {
+            animation: countUp 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>9:41</span>
+        <div class="flex gap-1">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="phone-screen custom-scroll" style="height: calc(100% - 44px - 83px);">
+        <!-- 用户信息卡片 -->
+        <div class="bg-gradient-to-br from-violet-500 to-violet-600 px-6 pt-6 pb-20 text-white">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold">个人中心</h1>
+                <button class="bg-white/20 backdrop-blur-sm p-2 rounded-full">
+                    <i class="fas fa-cog text-white"></i>
+                </button>
+            </div>
+
+            <!-- 用户信息 -->
+            <div class="flex items-center gap-4">
+                <div class="avatar-ring">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=face"
+                         alt="用户头像" class="w-20 h-20 rounded-full object-cover">
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold mb-1">张小明</h2>
+                    <p class="text-green-100 text-sm">记账达人 · 已坚持 128 天</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计数据 -->
+        <div class="px-6 -mt-12">
+            <div class="bg-white rounded-2xl shadow-lg p-4 grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-gray-800 count-up">1,234</p>
+                    <p class="text-xs text-gray-500 mt-1">总记账</p>
+                </div>
+                <div class="text-center border-x border-violet-200">
+                    <p class="text-2xl font-bold text-violet-500 count-up">128</p>
+                    <p class="text-xs text-gray-500 mt-1">连续天数</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-gray-800 count-up">89%</p>
+                    <p class="text-xs text-gray-500 mt-1">准确率</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成就徽章 -->
+        <div class="px-6 py-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">我的成就</h3>
+            <div class="flex gap-3 overflow-x-auto">
+                <div class="flex flex-col items-center gap-2 min-w-fit">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center badge-bounce">
+                        <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">记账王者</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 min-w-fit">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-fire text-blue-500 text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">连续7天</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 min-w-fit">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-star text-purple-500 text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">精打细算</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 min-w-fit">
+                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">完美月度</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能菜单 -->
+        <div class="px-6 pb-6">
+            <div class="bg-white rounded-2xl overflow-hidden">
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-wallet text-orange-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">账户管理</p>
+                            <p class="text-xs text-gray-500">绑定银行卡、设置预算</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-tags text-blue-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">分类管理</p>
+                            <p class="text-xs text-gray-500">自定义收支分类</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-file-export text-purple-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">数据导出</p>
+                            <p class="text-xs text-gray-500">导出CSV、Excel报表</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-green-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">目标设置</p>
+                            <p class="text-xs text-gray-500">储蓄目标、消费限制</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- 其他功能 -->
+            <div class="bg-white rounded-2xl overflow-hidden mt-4">
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-question-circle text-pink-500"></i>
+                        </div>
+                        <span class="font-semibold text-gray-800">帮助中心</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-star text-yellow-600"></i>
+                        </div>
+                        <span class="font-semibold text-gray-800">给我们评分</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="feature-card w-full p-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-info-circle text-gray-500"></i>
+                        </div>
+                        <span class="font-semibold text-gray-800">关于我们</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- 退出登录按钮 -->
+            <button class="w-full mt-6 mb-4 py-3 text-red-500 font-semibold hover:bg-red-50 rounded-2xl transition-colors">
+                退出登录
+            </button>
+        </div>
+
+        <!-- 底部安全区 -->
+        <div class="bottom-safe-area"></div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-list"></i>
+            <span>账单</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-chart-pie"></i>
+            <span>统计</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // Tab 切换事件
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 功能卡片点击事件
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('p').textContent;
+                showToast(`已打开：${title}`);
+            });
+        });
+
+        // 数字动画
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.count-up');
+            numbers.forEach(num => {
+                const finalValue = num.textContent;
+                const isPercentage = finalValue.includes('%');
+                const isDecimal = finalValue.includes('.');
+                const numericValue = parseFloat(finalValue);
+
+                let currentValue = 0;
+                const increment = numericValue / 50;
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= numericValue) {
+                        currentValue = numericValue;
+                        clearInterval(timer);
+                    }
+
+                    if (isDecimal) {
+                        num.textContent = currentValue.toFixed(1) + (isPercentage ? '%' : '');
+                    } else if (isPercentage) {
+                        num.textContent = Math.floor(currentValue) + '%';
+                    } else {
+                        num.textContent = Math.floor(currentValue).toLocaleString();
+                    }
+                }, 30);
+            });
+        }
+
+        // 页面加载时执行动画
+        window.addEventListener('load', () => {
+            setTimeout(animateNumbers, 500);
+        });
+
+        // Toast 提示函数
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

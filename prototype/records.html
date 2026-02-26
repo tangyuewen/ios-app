@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>账单列表页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --violet-900: #5B21B6;
+            --violet-800: #6D28D9;
+            --violet-700: #7C3AED;
+            --violet-600: #8B5CF6;
+            --violet-500: #9333EA;
+            --violet-400: #A855F7;
+            --violet-300: #C084FC;
+            --violet-200: #DDD6FE;
+            --violet-100: #E9D5FF;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-50);
+        }
+
+        /* 自定义滚动条 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--violet-300);
+            border-radius: 10px;
+        }
+
+        /* 底部安全区 */
+        .bottom-safe-area {
+            padding-bottom: 20px;
+        }
+
+        /* 筛选标签样式 */
+        .filter-tag {
+            transition: all 0.2s;
+        }
+
+        .filter-tag.active {
+            background: #4ADE80;
+            color: white;
+        }
+
+        /* 账单条目动画 */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .bill-item {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* 下拉刷新样式 */
+        .pull-refresh {
+            transition: transform 0.3s ease-out;
+        }
+
+        .pull-refresh.refreshing {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>9:41</span>
+        <div class="flex gap-1">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="phone-screen custom-scroll" style="height: calc(100% - 44px - 83px);">
+        <!-- 头部 -->
+        <div class="bg-white px-6 py-4 sticky top-0 z-10 shadow-sm">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">账单</h1>
+
+            <!-- 统计卡片 -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-violet-50 rounded-2xl p-4">
+                    <p class="text-violet-600 text-sm mb-1">本月支出</p>
+                    <p class="text-2xl font-bold text-violet-600">¥3,420</p>
+                    <p class="text-xs text-violet-400 mt-1">+12% 较上月</p>
+                </div>
+                <div class="bg-violet-100 rounded-2xl p-4">
+                    <p class="text-violet-700 text-sm mb-1">本月收入</p>
+                    <p class="text-2xl font-bold text-violet-700">¥8,500</p>
+                    <p class="text-xs text-violet-500 mt-1">+8% 较上月</p>
+                </div>
+            </div>
+
+            <!-- 筛选标签 -->
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <button class="filter-tag active px-4 py-2 rounded-full bg-violet-500 text-white text-sm whitespace-nowrap">
+                    全部
+                </button>
+                <button class="filter-tag px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm whitespace-nowrap">
+                    支出
+                </button>
+                <button class="filter-tag px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm whitespace-nowrap">
+                    收入
+                </button>
+                <button class="filter-tag px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm whitespace-nowrap">
+                    餐饮
+                </button>
+                <button class="filter-tag px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm whitespace-nowrap">
+                    交通
+                </button>
+                <button class="filter-tag px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm whitespace-nowrap">
+                    购物
+                </button>
+            </div>
+        </div>
+
+        <!-- 日期分组 -->
+        <div class="px-6 py-4">
+            <!-- 今天 -->
+            <div class="mb-6">
+                <p class="text-gray-500 text-sm mb-3">今天</p>
+
+                <!-- 账单列表 -->
+                <div class="space-y-3">
+                    <!-- 账单条目1 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=40&h=40&fit=crop&crop=face"
+                                 alt="星巴克" class="w-10 h-10 rounded-xl object-cover">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">星巴克</p>
+                                <p class="text-sm text-gray-500">餐饮 · 08:30</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-500">-¥35.00</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 账单条目2 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-subway text-blue-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">地铁</p>
+                                <p class="text-sm text-gray-500">交通 · 08:15</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-500">-¥4.00</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 账单条目3 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=40&h=40&fit=crop&crop=face"
+                                 alt="午餐" class="w-10 h-10 rounded-xl object-cover">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">午餐</p>
+                                <p class="text-sm text-gray-500">餐饮 · 12:30</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-500">-¥45.00</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 昨天 -->
+            <div class="mb-6">
+                <p class="text-gray-500 text-sm mb-3">昨天</p>
+
+                <div class="space-y-3">
+                    <!-- 账单条目4 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-wallet text-green-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">工资</p>
+                                <p class="text-sm text-gray-500">收入 · 15:20</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-green-500">+¥8,500.00</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 账单条目5 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=40&h=40&fit=crop&crop=face"
+                                 alt="超市" class="w-10 h-10 rounded-xl object-cover">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">沃尔玛超市</p>
+                                <p class="text-sm text-gray-500">购物 · 19:45</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-500">-¥156.80</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 本月 -->
+            <div class="mb-6">
+                <p class="text-gray-500 text-sm mb-3">本月</p>
+
+                <div class="space-y-3">
+                    <!-- 账单条目6 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-film text-purple-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">电影票</p>
+                                <p class="text-sm text-gray-500">娱乐 · 2月24日</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-500">-¥68.00</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 账单条目7 -->
+                    <div class="bg-white rounded-2xl p-4 flex items-center justify-between bill-item">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-bolt text-yellow-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">电费</p>
+                                <p class="text-sm text-gray-500">居住 · 2月23日</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-500">-¥128.50</p>
+                            <button class="text-xs text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 加载更多 -->
+            <div class="text-center py-4">
+                <button class="text-green-500 text-sm">加载更多</button>
+            </div>
+        </div>
+
+        <!-- 底部安全区 -->
+        <div class="bottom-safe-area"></div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-list"></i>
+            <span>账单</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-chart-pie"></i>
+            <span>统计</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // Tab 切换事件
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 筛选标签点击事件
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 账单条目长按事件
+        document.querySelectorAll('.bill-item').forEach(item => {
+            let pressTimer;
+
+            item.addEventListener('mousedown', function() {
+                pressTimer = setTimeout(() => {
+                    showToast('长按菜单');
+                }, 800);
+            });
+
+            item.addEventListener('mouseup', function() {
+                clearTimeout(pressTimer);
+            });
+
+            item.addEventListener('mouseleave', function() {
+                clearTimeout(pressTimer);
+            });
+        });
+
+        // 滚动到底部加载更多
+        const container = document.querySelector('.custom-scroll');
+        let isLoading = false;
+
+        container.addEventListener('scroll', function() {
+            if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100) {
+                if (!isLoading) {
+                    isLoading = true;
+                    setTimeout(() => {
+                        // 这里可以加载更多数据
+                        isLoading = false;
+                        showToast('已加载全部');
+                    }, 1000);
+                }
+            }
+        });
+
+        // Toast 提示函数
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

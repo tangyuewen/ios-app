@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>语音记账App - 高保真原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* violet-bloom 主题变量 */
+        :root {
+            --violet-900: #5B21B6;
+            --violet-800: #6D28D9;
+            --violet-700: #7C3AED;
+            --violet-600: #8B5CF6;
+            --violet-500: #9333EA;
+            --violet-400: #A855F7;
+            --violet-300: #C084FC;
+            --violet-200: #DDD6FE;
+            --violet-100: #E9D5FF;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+        }
+
+        /* 自定义样式 */
+        .phone-container {
+            width: 393px;
+            height: 852px;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 0 12px #1a1a1a, 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: var(--slate-50);
+        }
+
+        .phone-screen::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .phone-screen::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background: #ffffff;
+            border-top: 1px solid #f5f5f7;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #8e8e93;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: #4ADE80;
+        }
+
+        .tab-item i {
+            font-size: 24px;
+        }
+
+        .tab-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 动画效果 */
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .mic-button {
+            animation: pulse-scale 2s infinite;
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .slide-up {
+            animation: slide-up 0.3s ease-out;
+        }
+
+        /* violet-bloom 样式 */
+        .violet-gradient {
+            background: linear-gradient(135deg, var(--violet-600) 0%, var(--violet-500) 100%);
+        }
+
+        .violet-accent {
+            background: var(--violet-500);
+        }
+
+        .violet-light {
+            background: var(--violet-100);
+        }
+
+        .violet-text {
+            color: var(--violet-600);
+        }
+
+        .border-violet {
+            border-color: var(--violet-300);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- 标题 -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">语音记账App高保真原型</h1>
+            <p class="text-gray-600">极简快速 · 语音一落账</p>
+        </div>
+
+        <!-- 原型展示区域 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+
+            <!-- 语音记账首页 -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-center text-gray-700">语音记账首页</h2>
+                <div class="phone-container">
+                    <iframe src="home.html" frameborder="0" class="phone-screen"></iframe>
+                </div>
+            </div>
+
+            <!-- 账单列表页 -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-center text-gray-700">账单列表页</h2>
+                <div class="phone-container">
+                    <iframe src="records.html" frameborder="0" class="phone-screen"></iframe>
+                </div>
+            </div>
+
+            <!-- 数据统计页 -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-center text-gray-700">数据统计页</h2>
+                <div class="phone-container">
+                    <iframe src="stats.html" frameborder="0" class="phone-screen"></iframe>
+                </div>
+            </div>
+
+            <!-- 个人中心页 -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-center text-gray-700">个人中心页</h2>
+                <div class="phone-container">
+                    <iframe src="profile.html" frameborder="0" class="phone-screen"></iframe>
+                </div>
+            </div>
+
+            <!-- 快速编辑页 -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-center text-gray-700">快速编辑页</h2>
+                <div class="phone-container">
+                    <iframe src="edit.html" frameborder="0" class="phone-screen"></iframe>
+                </div>
+            </div>
+
+            <!-- 设置页 -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-center text-gray-700">设置页</h2>
+                <div class="phone-container">
+                    <iframe src="settings.html" frameborder="0" class="phone-screen"></iframe>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 交互说明 -->
+        <div class="mt-12 bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">核心交互说明</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">设计原则</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check-circle text-violet-500 mt-1"></i>
+                            <span><strong>零确认：</strong>语音解析后直接入账，无需手动确认</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check-circle text-violet-500 mt-1"></i>
+                            <span><strong>弱引导：</strong>减少弹窗提示，用轻量toast反馈结果</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check-circle text-violet-500 mt-1"></i>
+                            <span><strong>沉浸式：</strong>核心操作占满屏幕，减少干扰元素</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check-circle text-violet-500 mt-1"></i>
+                            <span><strong>容错设计：</strong>支持一键编辑，而非重新录入</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">技术规范</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-mobile-alt text-violet-500 mt-1"></i>
+                            <span>尺寸：iPhone15 Pro (393×852px)，圆角30px</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-palette text-violet-500 mt-1"></i>
+                            <span>配色：violet-bloom主题（紫色系）</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-font text-violet-500 mt-1"></i>
+                            <span>字体：SF Pro/Roboto，字号层级：20px/16px/14px</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-code text-violet-500 mt-1"></i>
+                            <span>框架：HTML + Tailwind CSS + FontAwesome</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有iframe添加加载完成后的处理
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.addEventListener('load', function() {
+                    // 获取iframe内容
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                        // 为所有tab添加点击事件
+                        const tabs = iframeDoc.querySelectorAll('.tab-item');
+                        tabs.forEach(tab => {
+                            tab.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                // 移除所有active类
+                                tabs.forEach(t => t.classList.remove('active'));
+                                // 添加active类到当前tab
+                                this.classList.add('active');
+                            });
+                        });
+
+                        // 为麦克风按钮添加点击效果
+                        const micBtn = iframeDoc.querySelector('.mic-button');
+                        if (micBtn) {
+                            micBtn.addEventListener('click', function() {
+                                this.style.transform = 'scale(0.95)';
+                                setTimeout(() => {
+                                    this.style.transform = 'scale(1)';
+                                }, 100);
+                            });
+                        }
+
+                    } catch (e) {
+                        console.log('无法访问iframe内容:', e);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

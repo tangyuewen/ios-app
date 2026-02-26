@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>设置页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --violet-900: #5B21B6;
+            --violet-800: #6D28D9;
+            --violet-700: #7C3AED;
+            --violet-600: #8B5CF6;
+            --violet-500: #9333EA;
+            --violet-400: #A855F7;
+            --violet-300: #C084FC;
+            --violet-200: #DDD6FE;
+            --violet-100: #E9D5FF;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-50);
+        }
+
+        /* 自定义滚动条 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--violet-300);
+            border-radius: 10px;
+        }
+
+        /* 底部安全区 */
+        .bottom-safe-area {
+            padding-bottom: 20px;
+        }
+
+        /* 开关样式 */
+        .switch {
+            position: relative;
+            width: 51px;
+            height: 31px;
+            background: #E5E7EB;
+            border-radius: 15px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .switch.active {
+            background: var(--violet-500);
+        }
+
+        .switch::after {
+            content: '';
+            position: absolute;
+            width: 27px;
+            height: 27px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .switch.active::after {
+            transform: translateX(20px);
+        }
+
+        /* 设置项动画 */
+        .setting-item {
+            transition: all 0.2s;
+        }
+
+        .setting-item:active {
+            background: #F9FAFB;
+            transform: scale(0.98);
+        }
+
+        /* 版本号样式 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .version {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>9:41</span>
+        <div class="flex gap-1">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="phone-screen custom-scroll" style="height: calc(100% - 44px - 83px);">
+        <!-- 头部 -->
+        <div class="bg-white px-6 py-4 flex items-center shadow-sm">
+            <button class="p-2 hover:bg-gray-100 rounded-xl transition-colors mr-2">
+                <i class="fas fa-chevron-left text-gray-600 text-xl"></i>
+            </button>
+            <h1 class="text-xl font-semibold text-gray-800">设置</h1>
+        </div>
+
+        <!-- 设置内容 -->
+        <div class="px-6 py-4">
+            <!-- 账户设置 -->
+            <div class="bg-white rounded-2xl overflow-hidden mb-4">
+                <h2 class="text-sm text-gray-500 px-4 pt-4 pb-2">账户设置</h2>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-user text-blue-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">个人信息</p>
+                            <p class="text-xs text-gray-500">头像、昵称、绑定手机</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-green-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">隐私与安全</p>
+                            <p class="text-xs text-gray-500">密码、指纹、面容ID</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-credit-card text-purple-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">支付设置</p>
+                            <p class="text-xs text-gray-500">银行卡、支付方式</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- 记账设置 -->
+            <div class="bg-white rounded-2xl overflow-hidden mb-4">
+                <h2 class="text-sm text-gray-500 px-4 pt-4 pb-2">记账设置</h2>
+
+                <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-microphone text-orange-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">语音记账</p>
+                            <p class="text-xs text-gray-500">智能识别、自动补全</p>
+                        </div>
+                    </div>
+                    <div class="switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+
+                <div class="border-t border-gray-100"></div>
+
+                <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-bell text-red-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">记账提醒</p>
+                            <p class="text-xs text-gray-500">每日提醒时间</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-500">20:00</span>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100"></div>
+
+                <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-tags text-yellow-600"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">默认分类</p>
+                            <p class="text-xs text-gray-500">常用分类设置</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+
+                <div class="border-t border-gray-100"></div>
+
+                <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-dollar-sign text-indigo-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">货币单位</p>
+                            <p class="text-xs text-gray-500">人民币（CNY）</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- 通用设置 -->
+            <div class="bg-white rounded-2xl overflow-hidden mb-4">
+                <h2 class="text-sm text-gray-500 px-4 pt-4 pb-2">通用设置</h2>
+
+                <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-moon text-pink-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">深色模式</p>
+                            <p class="text-xs text-gray-500">跟随系统</p>
+                        </div>
+                    </div>
+                    <div class="switch" onclick="this.classList.toggle('active')"></div>
+                </div>
+
+                <div class="border-t border-gray-100"></div>
+
+                <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-language text-teal-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">语言</p>
+                            <p class="text-xs text-gray-500">简体中文</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-download text-gray-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">数据备份</p>
+                            <p class="text-xs text-gray-500">自动备份、手动备份</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-broom text-cyan-500"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold text-gray-800">清理缓存</p>
+                            <p class="text-xs text-gray-500">已使用 128MB</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- 关于 -->
+            <div class="bg-white rounded-2xl overflow-hidden mb-20">
+                <h2 class="text-sm text-gray-500 px-4 pt-4 pb-2">关于</h2>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-info-circle text-green-500"></i>
+                        </div>
+                        <span class="font-semibold text-gray-800">版本</span>
+                    </div>
+                    <span class="text-sm text-gray-500 version">v2.1.0</span>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-file-contract text-blue-500"></i>
+                        </div>
+                        <span class="font-semibold text-gray-800">用户协议</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button class="setting-item w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-user-shield text-purple-500"></i>
+                        </div>
+                        <span class="font-semibold text-gray-800">隐私政策</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 底部安全区 -->
+        <div class="bottom-safe-area"></div>
+    </div>
+
+    <script>
+        // 设置项点击事件
+        document.querySelectorAll('.setting-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const title = this.querySelector('.font-semibold').textContent;
+                showToast('已打开：' + title);
+            });
+        });
+
+        // Toast 提示函数
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+
+        // 返回按钮事件
+        document.querySelector('.fa-chevron-left').parentElement.addEventListener('click', function() {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>

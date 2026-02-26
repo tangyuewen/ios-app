@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>数据统计页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --violet-900: #5B21B6;
+            --violet-800: #6D28D9;
+            --violet-700: #7C3AED;
+            --violet-600: #8B5CF6;
+            --violet-500: #9333EA;
+            --violet-400: #A855F7;
+            --violet-300: #C084FC;
+            --violet-200: #DDD6FE;
+            --violet-100: #E9D5FF;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-50);
+        }
+
+        /* 自定义滚动条 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--violet-300);
+            border-radius: 10px;
+        }
+
+        /* 底部安全区 */
+        .bottom-safe-area {
+            padding-bottom: 20px;
+        }
+
+        /* 图表容器样式 */
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        /* 分类卡片动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .category-card {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* 时间选择器样式 */
+        .time-picker {
+            transition: all 0.2s;
+        }
+
+        .time-picker.active {
+            background: var(--violet-500);
+            color: white;
+        }
+
+        /* 趋势箭头 */
+        .trend-up {
+            color: var(--violet-500);
+        }
+
+        .trend-down {
+            color: var(--violet-700);
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>9:41</span>
+        <div class="flex gap-1">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="phone-screen custom-scroll" style="height: calc(100% - 44px - 83px);">
+        <!-- 头部 -->
+        <div class="bg-white px-6 py-4 sticky top-0 z-10 shadow-sm">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">统计</h1>
+
+            <!-- 时间选择器 -->
+            <div class="flex gap-2 bg-gray-100 rounded-xl p-1">
+                <button class="time-picker flex-1 py-2 rounded-lg text-sm font-medium">日</button>
+                <button class="time-picker active flex-1 py-2 rounded-lg text-sm font-medium">周</button>
+                <button class="time-picker flex-1 py-2 rounded-lg text-sm font-medium">月</button>
+                <button class="time-picker flex-1 py-2 rounded-lg text-sm font-medium">年</button>
+            </div>
+        </div>
+
+        <!-- 总览卡片 -->
+        <div class="px-6 py-4">
+            <!-- 本月概览 -->
+            <div class="bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl p-6 text-white mb-6">
+                <h2 class="text-lg font-semibold mb-4">本月概览</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-green-100 text-sm mb-1">结余</p>
+                        <p class="text-3xl font-bold mb-2">¥5,080.00</p>
+                        <div class="flex items-center gap-1 text-sm">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>较上月 +15.3%</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-green-100 text-sm mb-2">收支比</p>
+                        <p class="text-4xl font-bold">2.5:1</p>
+                        <p class="text-xs text-green-100 mt-1">健康水平</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 收支趋势 -->
+            <div class="bg-white rounded-2xl p-4 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">收支趋势</h3>
+                    <div class="flex gap-2">
+                        <button class="text-xs text-gray-500">支出</button>
+                        <button class="text-xs text-green-500">收入</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 分类统计 -->
+            <div class="bg-white rounded-2xl p-4 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">分类统计</h3>
+
+                <!-- 分类占比 -->
+                <div class="chart-container mb-4">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+
+                <!-- 分类列表 -->
+                <div class="space-y-3">
+                    <div class="category-card flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-utensils text-red-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">餐饮</p>
+                                <p class="text-sm text-gray-500">32 笔</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-800">¥1,250</p>
+                            <p class="text-sm text-red-500">36.5%</p>
+                        </div>
+                    </div>
+
+                    <div class="category-card flex items-center justify-between" style="animation-delay: 0.1s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-bus text-blue-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">交通</p>
+                                <p class="text-sm text-gray-500">45 笔</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-800">¥680</p>
+                            <p class="text-sm text-red-500">19.9%</p>
+                        </div>
+                    </div>
+
+                    <div class="category-card flex items-center justify-between" style="animation-delay: 0.2s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-shopping-bag text-purple-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">购物</p>
+                                <p class="text-sm text-gray-500">18 笔</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-800">¥890</p>
+                            <p class="text-sm text-red-500">26.0%</p>
+                        </div>
+                    </div>
+
+                    <div class="category-card flex items-center justify-between" style="animation-delay: 0.3s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-gamepad text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">娱乐</p>
+                                <p class="text-sm text-gray-500">12 笔</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-800">¥320</p>
+                            <p class="text-sm text-red-500">9.4%</p>
+                        </div>
+                    </div>
+
+                    <div class="category-card flex items-center justify-between" style="animation-delay: 0.4s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-heart text-pink-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">医疗</p>
+                                <p class="text-sm text-gray-500">5 笔</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-800">¥260</p>
+                            <p class="text-sm text-red-500">7.6%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预算提醒 -->
+            <div class="bg-orange-50 rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <i class="fas fa-exclamation-circle text-orange-500"></i>
+                    <h3 class="font-semibold text-gray-800">预算提醒</h3>
+                </div>
+                <p class="text-sm text-gray-600">餐饮支出已达到本月预算的85%</p>
+                <div class="mt-2 bg-orange-200 rounded-full h-2">
+                    <div class="bg-orange-500 h-2 rounded-full" style="width: 85%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部安全区 -->
+        <div class="bottom-safe-area"></div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-list"></i>
+            <span>账单</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-chart-pie"></i>
+            <span>统计</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // Tab 切换事件
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 时间选择器事件
+        document.querySelectorAll('.time-picker').forEach(picker => {
+            picker.addEventListener('click', function() {
+                document.querySelectorAll('.time-picker').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+
+                // 重新渲染图表
+                updateCharts();
+            });
+        });
+
+        // 初始化趋势图表
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1周前', '6天前', '5天前', '4天前', '3天前', '2天前', '昨天', '今天'],
+                datasets: [{
+                    label: '支出',
+                    data: [120, 150, 200, 180, 220, 190, 160, 84],
+                    borderColor: '#EF4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: '收入',
+                    data: [0, 0, 0, 0, 0, 0, 8500, 0],
+                    borderColor: '#22C55E',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f5f5f7'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 初始化分类图表
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['餐饮', '交通', '购物', '娱乐', '医疗'],
+                datasets: [{
+                    data: [1250, 680, 890, 320, 260],
+                    backgroundColor: [
+                        '#EF4444',
+                        '#3B82F6',
+                        '#A855F7',
+                        '#EAB308',
+                        '#EC4899'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // 更新图表函数
+        function updateCharts() {
+            // 这里可以根据选择的时间段更新图表数据
+            showToast('已切换到' + document.querySelector('.time-picker.active').textContent + '视图');
+        }
+
+        // Toast 提示函数
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

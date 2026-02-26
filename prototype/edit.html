@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>快速编辑页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --violet-900: #5B21B6;
+            --violet-800: #6D28D9;
+            --violet-700: #7C3AED;
+            --violet-600: #8B5CF6;
+            --violet-500: #9333EA;
+            --violet-400: #A855F7;
+            --violet-300: #C084FC;
+            --violet-200: #DDD6FE;
+            --violet-100: #E9D5FF;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--slate-50);
+        }
+
+        /* 自定义滚动条 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--violet-300);
+            border-radius: 10px;
+        }
+
+        /* 底部安全区 */
+        .bottom-safe-area {
+            padding-bottom: 20px;
+        }
+
+        /* 输入框样式 */
+        .input-field {
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: #4ADE80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+
+        /* 分类按钮样式 */
+        .category-button {
+            transition: all 0.2s;
+        }
+
+        .category-button.active {
+            background: #4ADE80;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* 保存按钮动画 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .save-button:active {
+            animation: pulse 0.3s;
+        }
+
+        /* 删除按钮动画 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .delete-button:active {
+            animation: shake 0.3s;
+        }
+
+        /* 数字输入增强 */
+        .number-input::-webkit-inner-spin-button,
+        .number-input::-webkit-outer-spin-button {
+            opacity: 1;
+        }
+
+        /* Toast 提示样式 */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 16px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>9:41</span>
+        <div class="flex gap-1">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="phone-screen custom-scroll" style="height: calc(100% - 44px - 83px);">
+        <!-- 头部 -->
+        <div class="bg-white px-6 py-4 flex items-center justify-between shadow-sm">
+            <button class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                <i class="fas fa-times text-gray-600 text-xl"></i>
+            </button>
+            <h1 class="text-xl font-semibold text-gray-800">编辑记账</h1>
+            <div class="w-10"></div>
+        </div>
+
+        <!-- 编辑表单 -->
+        <div class="px-6 py-6">
+            <!-- 金额输入 -->
+            <div class="bg-white rounded-2xl p-6 mb-4">
+                <label class="text-sm text-gray-600 mb-2 block">金额</label>
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl font-light text-gray-400">¥</span>
+                    <input type="number"
+                           class="number-input input-field flex-1 text-3xl font-semibold text-gray-800 outline-none border-b-2 border-gray-200 pb-2"
+                           value="45.00"
+                           step="0.01"
+                           placeholder="0.00">
+                </div>
+            </div>
+
+            <!-- 类型选择 -->
+            <div class="bg-white rounded-2xl p-6 mb-4">
+                <label class="text-sm text-gray-600 mb-3 block">类型</label>
+                <div class="flex gap-3">
+                    <button class="category-button active flex-1 py-3 rounded-xl border-2 border-gray-200 font-medium">
+                        支出
+                    </button>
+                    <button class="category-button flex-1 py-3 rounded-xl border-2 border-gray-200 font-medium">
+                        收入
+                    </button>
+                </div>
+            </div>
+
+            <!-- 分类选择 -->
+            <div class="bg-white rounded-2xl p-6 mb-4">
+                <label class="text-sm text-gray-600 mb-3 block">分类</label>
+                <div class="grid grid-cols-4 gap-3">
+                    <button class="category-button active flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-utensils text-red-500 text-xl"></i>
+                        <span class="text-xs">餐饮</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-bus text-blue-500 text-xl"></i>
+                        <span class="text-xs">交通</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-shopping-bag text-purple-500 text-xl"></i>
+                        <span class="text-xs">购物</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-gamepad text-green-500 text-xl"></i>
+                        <span class="text-xs">娱乐</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-home text-yellow-600 text-xl"></i>
+                        <span class="text-xs">居住</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-heart text-pink-500 text-xl"></i>
+                        <span class="text-xs">医疗</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-briefcase text-gray-600 text-xl"></i>
+                        <span class="text-xs">工作</span>
+                    </button>
+                    <button class="category-button flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-gray-200">
+                        <i class="fas fa-ellipsis-h text-gray-400 text-xl"></i>
+                        <span class="text-xs">其他</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 备注输入 -->
+            <div class="bg-white rounded-2xl p-6 mb-4">
+                <label class="text-sm text-gray-600 mb-2 block">备注</label>
+                <input type="text"
+                       class="input-field w-full text-lg text-gray-800 outline-none border-b-2 border-gray-200 pb-2"
+                       value="午餐"
+                       placeholder="添加备注">
+            </div>
+
+            <!-- 日期时间 -->
+            <div class="bg-white rounded-2xl p-6 mb-4">
+                <label class="text-sm text-gray-600 mb-2 block">时间</label>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-calendar text-gray-400"></i>
+                        <input type="date"
+                               class="input-field text-lg text-gray-800 outline-none bg-transparent"
+                               value="2024-02-26">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-clock text-gray-400"></i>
+                        <input type="time"
+                               class="input-field text-lg text-gray-800 outline-none bg-transparent"
+                               value="12:30">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 账单图片 -->
+            <div class="bg-white rounded-2xl p-6 mb-20">
+                <label class="text-sm text-gray-600 mb-3 block">账单图片</label>
+                <div class="flex gap-3">
+                    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=80&h=80&fit=crop&crop=face"
+                         alt="账单图片" class="w-20 h-20 rounded-xl object-cover">
+                    <button class="w-20 h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-camera text-xl mb-1"></i>
+                        <span class="text-xs">拍照</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
+            <div class="flex gap-3">
+                <button class="delete-button flex-1 py-4 text-red-500 font-semibold hover:bg-red-50 rounded-2xl transition-colors">
+                    删除
+                </button>
+                <button class="save-button flex-1 bg-gradient-to-r from-green-400 to-green-500 text-white py-4 rounded-2xl font-semibold hover:shadow-lg transition-all">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Tab 切换事件（虽然这个页面没有Tab，但为了保持一致性）
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 类型选择事件
+        document.querySelectorAll('.category-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const parent = this.parentElement;
+
+                // 如果是单选按钮组
+                if (parent.classList.contains('flex')) {
+                    parent.querySelectorAll('.category-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+                // 如果是网格布局
+                else if (parent.classList.contains('grid')) {
+                    this.classList.toggle('active');
+                }
+            });
+        });
+
+        // 保存按钮点击事件
+        document.querySelector('.save-button').addEventListener('click', function() {
+            const amount = document.querySelector('.number-input').value;
+            const type = document.querySelector('.category-button.font-medium.active').textContent;
+            const category = document.querySelector('.grid .category-button.active span').textContent;
+            const note = document.querySelector('input[placeholder="添加备注"]').value;
+
+            if (!amount || amount <= 0) {
+                showToast('请输入有效金额');
+                return;
+            }
+
+            showToast('已保存：' + note + ' ¥' + amount);
+        });
+
+        // 删除按钮点击事件
+        document.querySelector('.delete-button').addEventListener('click', function() {
+            if (confirm('确定要删除这条记账记录吗？')) {
+                showToast('已删除');
+                // 这里可以返回上一页或关闭页面
+                setTimeout(() => {
+                    window.history.back();
+                }, 1000);
+            }
+        });
+
+        // 金额输入格式化
+        document.querySelector('.number-input').addEventListener('input', function(e) {
+            let value = parseFloat(e.target.value);
+            if (!isNaN(value)) {
+                e.target.value = value.toFixed(2);
+            }
+        });
+
+        // Toast 提示函数
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 拍照按钮点击事件
+        document.querySelector('.fa-camera').parentElement.addEventListener('click', function() {
+            showToast('打开相机');
+        });
+
+        // 页面加载完成后聚焦金额输入框
+        window.addEventListener('load', function() {
+            document.querySelector('.number-input').focus();
+            document.querySelector('.number-input').select();
+        });
+    </script>
+</body>
+</html>
